@@ -1,0 +1,15 @@
+{
+    "dev": {
+        "awscloudformation": {
+            "AuthRoleName": "amplify-weveg-dev-195522-authRole",
+            "UnauthRoleArn": "arn:aws:iam::259393408372:role/amplify-weveg-dev-195522-unauthRole",
+            "AuthRoleArn": "arn:aws:iam::259393408372:role/amplify-weveg-dev-195522-authRole",
+            "Region": "us-east-1",
+            "DeploymentBucketName": "amplify-weveg-dev-195522-deployment",
+            "UnauthRoleName": "amplify-weveg-dev-195522-unauthRole",
+            "StackName": "amplify-weveg-dev-195522",
+            "StackId": "arn:aws:cloudformation:us-east-1:259393408372:stack/amplify-weveg-dev-195522/66973000-ba6c-11ea-9598-0e3259ee6b3b",
+            "AmplifyAppId": "d127ko3k1o4j2y"
+        }
+    }
+}
