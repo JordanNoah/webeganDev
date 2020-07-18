@@ -1,32 +1,20 @@
 <template>
-  <div id="app">
-    <div id="nav">
-      <router-link to="/">New</router-link> |
-      <router-link to="/about">ASD</router-link>
-    </div>
-    <router-view/>
-  </div>
+  <v-app>
+      <router-view></router-view>
+  </v-app>
 </template>
-
-<style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
+<script>
+export default {
+  beforeCreate:function(){    
+    if (localStorage.getItem("sesionInformation") != null) {
+      if(this.$route.name!='main'){
+        this.$router.push({ name : 'main' })
+      }
+    }else{
+      if(this.$route.name!='loginRegister'){
+        this.$router.push({ name : 'loginRegister' })
+      }
+    }
+  }
 }
-
-#nav {
-  padding: 30px;
-}
-
-#nav a {
-  font-weight: bold;
-  color: #2c3e50;
-}
-
-#nav a.router-link-exact-active {
-  color: #42b983;
-}
-</style>
+</script>

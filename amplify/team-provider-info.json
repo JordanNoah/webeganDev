@@ -10,6 +10,11 @@
             "StackName": "amplify-weveg-dev-195522",
             "StackId": "arn:aws:cloudformation:us-east-1:259393408372:stack/amplify-weveg-dev-195522/66973000-ba6c-11ea-9598-0e3259ee6b3b",
             "AmplifyAppId": "d127ko3k1o4j2y"
+        },
+        "categories": {
+            "auth": {
+                "weveg3ee5a8a3": {}
+            }
         }
     }
 }
