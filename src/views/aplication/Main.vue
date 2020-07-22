@@ -80,15 +80,26 @@ export default {
             method:'get',
             url: "http://3.23.131.0:3002/api/users/"+idUser,
         }).then((res)=>{
-            this.$store.commit('saveUser',res.data.user)
-            console.log(res);
+            if(res.data.status=="fail"){
+                this.$store.commit('saveUser',[])
+                localStorage.clear()
+            }else{
+                this.$store.commit('saveUser',res.data.user)
+                axios({
+                    method:"get",
+                    url:"http://3.23.131.0:3002/api/otherSocial/"+idUser
+                }).then((res)=>{
+                    this.$store.commit('saveSocialNetwork',res.data.message)
+                }).catch((error)=>{
+                    console.log(error);
+                })
+            }
         }).catch((error)=>{
             console.log(error);
         })
     },
     methods: {
         pushConfig(){
-            console.log();
             if (this.$route.name!="configuration") {
                 this.$router.push({ name: 'configuration'})
             }

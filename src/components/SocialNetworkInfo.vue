@@ -15,7 +15,10 @@
                         <v-img src="https://cdn.vuetifyjs.com/images/john.png"></v-img>
                     </v-list-item-avatar>
                     <v-list-item-content>
-                        <v-list-item-title class="white--text">John Leiderasd</v-list-item-title>
+                        <v-list-item-title class="white--text">
+                            {{$store.state.userInformation.names}}
+                            {{$store.state.userInformation.surnames}}
+                        </v-list-item-title>
                         <v-list-item-subtitle class="white--text">{{title}}</v-list-item-subtitle>
                     </v-list-item-content>
                     <v-list-item-action>
@@ -27,7 +30,7 @@
             </v-list>
             <v-list>
                 <v-list-item @click="() => {}">
-                    <v-list-item-subtitle v-if="link.length!=0">{{link}}</v-list-item-subtitle>
+                    <v-list-item-subtitle v-if="link!=null">{{link}}</v-list-item-subtitle>
                     <v-list-item-subtitle v-else>No posees ninguna cuenta asociada</v-list-item-subtitle>
                 </v-list-item>
             </v-list>

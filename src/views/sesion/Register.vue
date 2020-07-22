@@ -42,7 +42,11 @@
                             </v-col>
                             <v-col cols="12" class="mb-3">
                                 <p class="caption mb-0">Pais</p>
-                                <v-select v-model="country" :rules="countryRules" placeholder="Seleccione .." :items="countries" item-text="name" outlined dense hide-details="flase"/>
+                                <v-select v-model="country" :rules="countryRules" placeholder="Seleccione .." :items="countriesExist" outlined dense hide-details="flase"/>
+                            </v-col>
+                            <v-col cols="12" class="mb-3">
+                                <p class="caption mb-0">Ciudad</p>
+                                <v-select v-model="city" :rules="cityRules" placeholder="Seleccione .." :items="citiesExist" outlined dense hide-details="flase"/>
                             </v-col>
                             <v-col cols="12" class="mb-3">
                                 <p class="caption mb-0">Género</p>
@@ -108,16 +112,18 @@
 </template>
 <script>
 import axios from 'axios'
-const countryList = require('country-list')
+const countries = require ('countries-cities')
 const getAge = require('age-by-birthdate')
 export default {
     data: () =>({
-        countries : countryList.getData(),
+        countriesExist : countries.getCountries(),
+        country:'',
+        citiesExist: [],
+        city:'',
         modalDate:false,
         names:'',
         surnames:'',
         dateBorn:new Date().toISOString().substr(0, 10),
-        country:'',
         email:'',
         gender:'hombre',
         password:'',
@@ -131,6 +137,9 @@ export default {
             v => getAge(v) > 18 || 'Debes ser mayor de edad' 
         ],
         countryRules:[
+            v => !!v || 'De donde eres'
+        ],
+        cityRules:[
             v => !!v || 'De donde eres'
         ],
         emailRules: [
@@ -165,6 +174,7 @@ export default {
                 params.append('bornDate',this.dateBorn)
                 params.append('gender',this.gender)
                 params.append('country',this.country)
+                params.append('city',this.city)
                 params.append('email',this.email)
                 params.append('password',this.password)
                 axios({
@@ -191,8 +201,7 @@ export default {
                         if (localStorage.getItem("sesionInformation") != null) {
                             this.$router.push({ name : 'main' })
                         }
-                    }
-                    
+                    } 
                 }).catch((error) =>{
                     console.log(error)
                 })
@@ -237,6 +246,9 @@ export default {
             } else {
                 this.passwordVlt4 = false
             }
+        },
+        country:function(){
+            this.citiesExist = countries.getCities(this.country)
         }
     }
 }
