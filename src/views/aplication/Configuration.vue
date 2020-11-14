@@ -188,8 +188,12 @@
                 <div class="showCard">
                     <v-card class="mx-auto" max-width="70%" height="500px" v-if="!showAllInformation">
                         <v-carousel hide-delimiter-background hide-delimiters show-arrows-on-hover progress height="100%">
-                            <v-carousel-item v-for="(slide, i) in slides" :key="i" :src="slide" reverse-transition="fade-transition" transition="fade-transition"></v-carousel-item>
+                            <v-carousel-item v-for="(slide, i) in slides" :key="i" :src="'http://3.23.131.0:3002'+slide.route" reverse-transition="fade-transition" transition="fade-transition"></v-carousel-item>
                         </v-carousel>
+                        <v-btn outlined color="pink" class="my-2" @click.stop="dialogImages=true">
+                            <v-icon class="mx-2">far fa-images</v-icon>
+                            Añadir fotos a tu tarjeta
+                        </v-btn>
                         <v-btn icon color="pink" class="showEverything" @click.stop="showAllInformation= !showAllInformation">
                             <v-icon>fas fa-info-circle</v-icon>
                         </v-btn>
@@ -348,6 +352,69 @@
                 </v-card-actions>
             </v-card>
         </v-dialog>
+        <v-dialog v-model="dialogImages" max-width="80%">
+            <v-card class="fill-height">
+                <v-card-text>
+                    <v-row v-if="cardsImages.length!=0">
+                        <v-card-text>Card images</v-card-text>
+                        <v-col v-for="(image,index) in cardsImages" :key="index" class="d-flex child-flex" cols="2" style="height: 185px;">
+                            <v-hover v-slot:default="{ hover }">
+                                <v-card flat tile class="d-flex" link draggable="false">
+                                    <v-img :src="'http://3.23.131.0:3002'+image.route" aspect-ratio="1" class="grey lighten-2">
+                                        <v-expand-transition>
+                                            <div v-if="hover" class="d-flex justify-center transition-fast-in-fast-out v-card--reveal display-3 white--text" style="height: 100%;background-color: rgba(0, 0, 0, 0.6);" @click.stop="removeThisCard(index)">
+                                                <v-icon color="white">
+                                                    far fa-times-circle
+                                                </v-icon>
+                                            </div>
+                                        </v-expand-transition>
+                                    </v-img>
+                                </v-card>
+                            </v-hover>
+                        </v-col>
+                    </v-row>
+                    <v-divider></v-divider>
+                    <v-row v-if="getImages.length!=0">
+                        <v-col v-for="(image,index) in getImages" :key="index" class="d-flex child-flex" cols="2" style="height: 185px;">
+                            <v-hover v-slot:default="{ hover }">
+                                <v-card flat tile class="d-flex" link>
+                                    <v-img :src="'http://3.23.131.0:3002'+image.route" aspect-ratio="1" class="grey lighten-2">
+                                        <v-expand-transition>
+                                            <div v-if="!cardsImages.includes(getImages[index])" style="height:100%;">
+                                                <div v-if="hover" class="d-flex justify-center transition-fast-in-fast-out v-card--reveal display-3 white--text" style="height: 100%;background-color: rgba(0, 0, 0, 0.6);" @click.stop="selectImage(index)">
+                                                    <v-icon color="white">
+                                                        fas fa-plus
+                                                    </v-icon>
+                                                </div>
+                                            </div>
+                                            <div v-else style="height:100%;">
+                                                <div class="d-flex justify-center transition-fast-in-fast-out v-card--reveal display-3 white--text" style="height: 100%;background-color: rgba(0, 0, 0, 0.6);" @click.stop="selectImage(index)">
+                                                    <v-icon color="white">
+                                                        far fa-times-circle
+                                                    </v-icon>
+                                                </div>
+                                            </div>
+                                        </v-expand-transition>
+                                    </v-img>
+                                </v-card>
+                            </v-hover>
+                        </v-col>
+                    </v-row>
+                    <v-row v-else>
+                        <p>No posees imagenes en tu galeria</p>
+                    </v-row>
+                </v-card-text>
+                <v-card-actions class="pt-0">
+                    <v-spacer></v-spacer>
+                    <v-btn color="green darken-1" text @click="dialog = false">
+                        Cancelar
+                    </v-btn>
+                    <v-btn color="green darken-1" text @click="saveImages()">
+                        Guardar
+                    </v-btn>
+                </v-card-actions>
+            </v-card>
+        </v-dialog>
         <v-expand-x-transition>
             <v-bottom-navigation v-show="expandSave" class="d-flex justify-end" style="position:sticky" color="white" v-if="hasChange">
                 <v-btn text color="error"><span class="red--text">Cancelar</span></v-btn>
@@ -377,14 +444,13 @@ export default {
         description:null,
         modalDate:false,
         dateBorn:null,
-        slides: [
-            'http://3.23.131.0:3002/api/resource/web/session/9e9a6680ec341363a7a405cf2b96fd78.jpg',
-            'http://3.23.131.0:3002/api/resource/web/session/343910bbb828a2a85ee08d85977b00bd.jpg',
-            'http://3.23.131.0:3002/api/resource/web/session/53ee5b7a6874924c3c537f86469d1ee1.jpg'
-        ],
+        slides: [{
+            route:'/api/resource/web/session/9e9a6680ec341363a7a405cf2b96fd78.jpg'
+        }],
         dateBornRules:[
             v => getAge(v) > 18 || 'Debes ser mayor de edad' 
         ],
+        dialogImages:false,
         gender:null,
         country:null,
         countriesExist : countries.getCountries(),
@@ -397,6 +463,7 @@ export default {
         relationship:null,
         job:null,
         jobList:[],
+        getImages:[],
         password:null,
         repeatPassword:null,
         language:null,
@@ -429,7 +496,8 @@ export default {
         languajesExist:languages.getData(),
         dialogProfile:false,
         profileChange:0,
-        linkChange:null
+        linkChange:null,
+        cardsImages:[]
     }),
     components:{
         SocialNetworkInfo
@@ -447,17 +515,18 @@ export default {
     },
     created: function(){
         var userInfo = this.$store.state.userInformation
-        console.log(userInfo.interests);
+        this.callImages()
+        this.callImgCard()
         this.nombres=userInfo.names
         this.apellidos=userInfo.surnames
         this.dateBorn=userInfo.bornDate
         this.gender=userInfo.gender
         this.country=userInfo.country
         this.city=userInfo.city
-        this.interests=(userInfo.interests).split(",")
+        this.interests=userInfo.interests==null?userInfo.interests:(userInfo.interests).split(",")
         this.relationship=userInfo.relationship
         this.lifeStile=userInfo.lifeStyle
-        this.language=(userInfo.language).split(",")
+        this.language=userInfo.language==null?userInfo.language:(userInfo.language).split(",")
         this.email=userInfo.email
         this.age=getAge(this.dateBorn).toString()
         this.description=userInfo.description
@@ -492,7 +561,6 @@ export default {
             this.hasBeingChange()
         },
         interests:function(){
-            console.log(this.interests)
             this.hasBeingChange()
         },
         job:function(){
@@ -584,6 +652,26 @@ export default {
                 this.hasChange=false
             }
         },
+        callImages(){
+            var idUser = JSON.parse(localStorage.getItem('sesionInformation'))["id_user"]
+            axios({
+                method:"get",
+                url:"http://3.23.131.0:3002/api/userImages/"+idUser
+            }).then((res)=>{
+                this.getImages = res.data.images
+            })
+        },
+        callImgCard(){
+            var idUser = JSON.parse(localStorage.getItem('sesionInformation'))["id_user"]
+            axios({
+                method:"get",
+                url:"http://3.23.131.0:3002/api/getImgCard/"+idUser
+            }).then((res)=>{
+                if(res.data.status=="success"){
+                    this.slides=res.data.message
+                }
+            })
+        },
         removeInterest (item) {
             const index = this.interests.indexOf(item)
             if (index >= 0) this.interests.splice(index, 1)
@@ -670,6 +758,38 @@ export default {
                 }
             }).catch((error)=>{
                 console.log(error);
+            })
+        },
+        selectImage(index){
+            if(this.cardsImages.length<=5){
+                if (this.cardsImages.includes(this.getImages[index])) {
+                    var indexOf = this.cardsImages.indexOf(this.getImages[index])
+                    this.cardsImages.splice(indexOf,1)
+                }else{
+                    this.cardsImages.push(this.getImages[index])
+                }
+            }else{
+                if (this.cardsImages.includes(this.getImages[index])) {
+                    var indexOft = this.cardsImages.indexOf(this.getImages[index])
+                    this.cardsImages.splice(indexOft,1)
+                }
+            }
+        },
+        removeThisCard(index){
+            this.cardsImages.splice(index,1)
+        },
+        saveImages(){
+            const params = new URLSearchParams()
+            params.append('idUser',JSON.parse(localStorage.getItem('sesionInformation'))["id_user"])
+            params.append('images',JSON.stringify(this.cardsImages))
+            axios({
+                method:"post",
+                url:"http://3.23.131.0:3002/api/configCardImage",
+                data:params
+            }).then((res) =>{
+                if (res.data.status=="success") {
+                    this.callImages()
+                }
             })
         }
     }
