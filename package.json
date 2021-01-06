@@ -15,7 +15,7 @@
     "age-by-birthdate": "^1.0.1",
     "aws-amplify": "^3.0.18",
     "aws-amplify-vue": "^2.1.1",
-    "axios": "^0.19.2",
+    "axios": "^0.21.1",
     "core-js": "^3.6.5",
     "countries-cities": "0.0.11",
     "interest-list": "0.0.7",
